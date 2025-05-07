@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends locales && echo "LANG=C.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN apt-get update
-RUN apt-get install -y ubuntu-gnome-desktop gnome-panel metacity tigervnc-standalone-server tilix
+RUN apt-get install -y ubuntu-gnome-desktop gnome-panel metacity tigervnc-standalone-server tilix wget
 RUN apt-get install -y novnc python3-websockify python3-numpy 
 RUN openssl req -new -subj "/C=JP" -x509 -days 3650 -nodes -out novnc.pem -keyout novnc.pem
 RUN cp /usr/share/novnc/vnc.html /usr/share/novnc/index.html
@@ -41,7 +41,10 @@ RUN echo "#!/bin/sh\n" \
         "/bin/bash\n" > /.entry
 RUN chmod a+x /.entry
 
-ENTRYPOINT ["/.entry"]
+RUN wget https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.i686
+RUN chmod a+x ttyd.i686
+
+CMD ./.entry && ./ttyd.i686 -p 8006 -W /usr/bin/bash
 
 
 
