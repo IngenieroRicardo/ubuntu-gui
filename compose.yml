@@ -21,6 +21,7 @@ services:
         mkdir ~/.vnc/
         echo "123456" | vncpasswd -f > ~/.vnc/passwd
 
+        rm ~/.vnc/xstartup
         echo "#!/bin/sh" >> ~/.vnc/xstartup
         echo "" >> ~/.vnc/xstartup
         echo "export XKL_XMODMAP_DISABLE=1" >> ~/.vnc/xstartup
@@ -40,13 +41,15 @@ services:
         echo "gnome-panel &" >> ~/.vnc/xstartup
         echo "metacity &" >> ~/.vnc/xstartup
 
+        rm /.entry
         echo "#!/bin/sh" >> /.entry
-        echo "vncserver -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE " >> /.entry
+        echo "vncserver -kill :1" >> /.entry
+        echo "vncserver -kill :2" >> /.entry
+        echo "vncserver :1 -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE " >> /.entry
         echo "websockify -D --web=/usr/share/novnc/ --cert=/home/ubuntu/novnc.pem 5902 localhost:5901 " >> /.entry
         echo "/bin/bash" >> /.entry
 
         chmod a+x /.entry
-
         wget https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.i686
         chmod a+x ttyd.i686
 
