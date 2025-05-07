@@ -36,7 +36,9 @@ RUN echo "#!/bin/sh\n" \
         "gnome-panel &\n" \
         "metacity &\n" > ~/.vnc/xstartup
 RUN echo "#!/bin/sh\n" \
-        "vncserver -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE \n" \
+        "vncserver -kill :1\n" \
+        "vncserver -kill :2\n" \
+        "vncserver :1 -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE \n" \
         "websockify -D --web=/usr/share/novnc/ --cert=/home/ubuntu/novnc.pem 5902 localhost:5901 \n" \
         "/bin/bash\n" > /.entry
 RUN chmod a+x /.entry
