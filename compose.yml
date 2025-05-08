@@ -9,18 +9,26 @@ services:
     entrypoint: ["/bin/bash","-c"]
     command: 
       - |
-        apt-get update && apt-get install -y --no-install-recommends locales && echo "LANG=C.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen && apt-get clean && rm -rf /var/lib/apt/lists/*
-        apt-get update
-        apt-get install -y ubuntu-gnome-desktop gnome-panel metacity tigervnc-standalone-server tilix wget
-        apt-get install -y novnc python3-websockify python3-numpy
+        if ! [ -f /ttyd.i686 ]; then \
+           apt-get update && apt-get install -y --no-install-recommends locales && echo "LANG=C.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen && apt-get clean && rm -rf /var/lib/apt/lists/*; \
+           apt-get update; \
+           apt-get install -y ubuntu-gnome-desktop gnome-panel metacity tigervnc-standalone-server tilix wget; \
+           apt-get install -y novnc python3-websockify python3-numpy; \
+        fi
+        
         openssl req -new -subj "/C=JP" -x509 -days 3650 -nodes -out novnc.pem -keyout novnc.pem
-        cp /usr/share/novnc/vnc.html /usr/share/novnc/index.html
+        
+        if ! [ -f /usr/share/novnc/index.html ]; then \
+           cp /usr/share/novnc/vnc.html /usr/share/novnc/index.html; \
+        fi
+        
         touch ~/.Xresources
         touch ~/.Xauthority
         mkdir ~/Desktop/
         mkdir ~/.vnc/
+        
         echo "123456" | vncpasswd -f > ~/.vnc/passwd
-
+        
         rm ~/.vnc/xstartup
         echo "#!/bin/sh" >> ~/.vnc/xstartup
         echo "" >> ~/.vnc/xstartup
@@ -48,11 +56,13 @@ services:
         echo "vncserver :1 -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE " >> /.entry
         echo "websockify -D --web=/usr/share/novnc/ --cert=/home/ubuntu/novnc.pem 5902 localhost:5901 " >> /.entry
         echo "/bin/bash" >> /.entry
-
         chmod a+x /.entry
-        wget https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.i686
-        chmod a+x ttyd.i686
 
+        if ! [ -f /ttyd.i686 ]; then \
+           wget https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.i686; \
+           chmod a+x ttyd.i686; \
+        fi
+        
         ./.entry && ./ttyd.i686 -p 8006 -W /usr/bin/bash
     ports:
       - "8006:5902"
