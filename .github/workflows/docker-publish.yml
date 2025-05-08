@@ -13,10 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Log in to Docker Hub
+      - name: Log in Docker Hub
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login https://index.docker.io/v1/ --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
 
       - uses: actions/checkout@v4
       - name: Build and tag image
@@ -25,5 +24,5 @@ jobs:
 
       - name: Push image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/ubuntu:latest .   
+          docker push ${{ secrets.DOCKER_USERNAME }}/ubuntu:latest
   
